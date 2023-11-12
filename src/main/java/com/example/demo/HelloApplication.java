@@ -162,6 +162,8 @@ public class HelloApplication extends Application {
                 gameStarted = false;
                 scoreP1 = 0;
                 scoreP2 = 0;
+                playerOneYPos = HEIGHT / 2;
+                playerTwoYPos = HEIGHT / 2;
 
                 if (!root.getChildren().contains(menuBox)) {
                     root.getChildren().add(menuBox);
@@ -218,21 +220,27 @@ public class HelloApplication extends Application {
 
             ballXPos += ballXSpeed;
             ballYPos += ballYSpeed;
+            ballXDirection = Math.signum(ballXSpeed) == 1 ? 1 : -1;
 
             // "AI" for the second player paddle movement
 
             if (gameMode == GameMode.PLAYER_VS_COMPUTER && ballXPos > WIDTH * 0.5 && Math.signum(ballXSpeed) == 1) {
                 int r = new Random().nextInt(1) == 0 ? 1 : -1;
-                if (playerTwoYPos + PLAYER_HEIGHT / 2 < ballYPos + ( r * 100)) {
-                    playerTwoYPos += 0.5 * SPEED_FACTOR;
-                } else {
-                    playerTwoYPos -= 0.5 * SPEED_FACTOR;
+                if (playerTwoYPos + PLAYER_HEIGHT / 2 < ballYPos + ( r * 50) && playerTwoYPos < HEIGHT - PLAYER_HEIGHT) {
+                    playerTwoYPos += 0.8 * SPEED_FACTOR;
+                } else if(playerTwoYPos > 0) {
+                    playerTwoYPos -= 0.8 * SPEED_FACTOR;
                 }
             }
 
             // Drawing the ball
+
             gc.fillOval(ballXPos, ballYPos, BALL_R, BALL_R);
         } else {
+
+            // Display instructions to start the game
+            gc.setTextAlign(TextAlignment.CENTER);
+
             // Reset ball position and speed for the next game
 
             resetBall();
@@ -262,10 +270,10 @@ public class HelloApplication extends Application {
 
         // Ball collision logic with paddles
 
-        if (((ballXPos + BALL_R > playerTwoXPos) && ballYPos >= playerTwoYPos
-                && ballYPos <= playerTwoYPos + PLAYER_HEIGHT) ||
-                ((ballXPos < playerOneXPos + PLAYER_WIDTH) && ballYPos >= playerOneYPos
-                        && ballYPos <= playerOneYPos + PLAYER_HEIGHT)) {
+        boolean isBallCollidingWithPlayerTwo = (ballXPos + BALL_R > playerTwoXPos) && ballYPos >= playerTwoYPos && ballYPos <= playerTwoYPos + PLAYER_HEIGHT && Math.signum(ballXSpeed) == 1;
+        boolean isBallCollidingWithPlayerOne = (ballXPos < playerOneXPos + PLAYER_WIDTH) && ballYPos >= playerOneYPos && ballYPos <= playerOneYPos + PLAYER_HEIGHT && Math.signum(ballXSpeed) == -1;
+
+        if (isBallCollidingWithPlayerTwo || isBallCollidingWithPlayerOne) {
 
             if (ballYPos >= (playerTwoYPos + (PLAYER_HEIGHT * 0.75)) && Math.signum(ballXSpeed) == 1
                     || ballYPos >= (playerOneYPos + (PLAYER_HEIGHT * 0.75)) && Math.signum(ballXSpeed) == -1) {
@@ -297,6 +305,7 @@ public class HelloApplication extends Application {
     // Helper method to reset the ball to the center of the screen
 
     private void resetBall() {
+
         ballXPos = WIDTH / 2;
         ballYPos = HEIGHT / 2;
         ballXSpeed = new Random().nextInt(2) == 0 ? SPEED_FACTOR : -SPEED_FACTOR;
