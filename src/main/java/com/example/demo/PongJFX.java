@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class HelloApplication extends Application {
+public class PongJFX extends Application {
 
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
@@ -220,7 +220,6 @@ public class HelloApplication extends Application {
 
             ballXPos += ballXSpeed;
             ballYPos += ballYSpeed;
-            ballXDirection = Math.signum(ballXSpeed) == 1 ? 1 : -1;
 
             // "AI" for the second player paddle movement
 
